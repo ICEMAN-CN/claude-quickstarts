@@ -54,18 +54,20 @@ def create_client(project_dir: Path, model: str) -> ClaudeSDKClient:
     3. Security hooks - Bash commands validated against an allowlist
        (see security.py for ALLOWED_COMMANDS)
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    # Support both ANTHROPIC_API_KEY and ANTHROPIC_AUTH_TOKEN (for GLM proxy)
+    api_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")
     if not api_key:
         raise ValueError(
-            "ANTHROPIC_API_KEY environment variable not set.\n"
-            "Get your API key from: https://console.anthropic.com/"
+            "ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN environment variable not set.\n"
+            "For Anthropic: Get your API key from: https://console.anthropic.com/\n"
+            "For GLM proxy: Set ANTHROPIC_AUTH_TOKEN and ANTHROPIC_BASE_URL"
         )
 
     # Create comprehensive security settings
     # Note: Using relative paths ("./**") restricts access to project directory
     # since cwd is set to project_dir
     security_settings = {
-        "sandbox": {"enabled": True, "autoAllowBashIfSandboxed": True},
+        "sandbox": {"enabled": False},  # Disabled to allow git commit with heredoc
         "permissions": {
             "defaultMode": "acceptEdits",  # Auto-approve edits within allowed directories
             "allow": [

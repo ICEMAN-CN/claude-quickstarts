@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(ls:*)",
+      "Bash(./venv/bin/python:*)",
+      "Bash(tee:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)"
+    ]
+  }
+}

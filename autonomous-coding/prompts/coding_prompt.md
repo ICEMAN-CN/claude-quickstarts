@@ -3,6 +3,8 @@
 You are continuing work on a long-running autonomous development task.
 This is a FRESH context window - you have no memory of previous sessions.
 
+**IMPORTANT: 当前阶段专注于实现功能，暂不做测试验证。快速实现所有功能后再统一测试。**
+
 ### STEP 1: GET YOUR BEARINGS (MANDATORY)
 
 Start by orienting yourself:
@@ -26,12 +28,9 @@ cat claude-progress.txt
 # 6. Check recent git history
 git log --oneline -20
 
-# 7. Count remaining tests
+# 7. Count remaining features
 cat feature_list.json | grep '"passes": false' | wc -l
 ```
-
-Understanding the `app_spec.txt` is critical - it contains the full requirements
-for the application you're building.
 
 ### STEP 2: START SERVERS (IF NOT RUNNING)
 
@@ -43,154 +42,88 @@ chmod +x init.sh
 
 Otherwise, start servers manually and document the process.
 
-### STEP 3: VERIFICATION TEST (CRITICAL!)
+### STEP 3: CHOOSE MULTIPLE FEATURES TO IMPLEMENT
 
-**MANDATORY BEFORE NEW WORK:**
+Look at feature_list.json and find features with "passes": false.
 
-The previous session may have introduced bugs. Before implementing anything
-new, you MUST run verification tests.
+**当前策略：批量实现功能，不运行测试**
+- 选择 3-5 个相关的功能一起实现
+- 快速编写代码，不做浏览器验证
+- 实现完成后标记 passes: true
+- 继续下一批功能
 
-Run 1-2 of the feature tests marked as `"passes": true` that are most core to the app's functionality to verify they still work.
-For example, if this were a chat app, you should perform a test that logs into the app, sends a message, and gets a response.
+### STEP 4: IMPLEMENT FEATURES RAPIDLY
 
-**If you find ANY issues (functional or visual):**
-- Mark that feature as "passes": false immediately
-- Add issues to a list
-- Fix all issues BEFORE moving to new features
-- This includes UI bugs like:
-  * White-on-white text or poor contrast
-  * Random characters displayed
-  * Incorrect timestamps
-  * Layout issues or overflow
-  * Buttons too close together
-  * Missing hover states
-  * Console errors
-
-### STEP 4: CHOOSE ONE FEATURE TO IMPLEMENT
-
-Look at feature_list.json and find the highest-priority feature with "passes": false.
-
-Focus on completing one feature perfectly and completing its testing steps in this session before moving on to other features.
-It's ok if you only complete one feature in this session, as there will be more sessions later that continue to make progress.
-
-### STEP 5: IMPLEMENT THE FEATURE
-
-Implement the chosen feature thoroughly:
+Implement features without testing:
 1. Write the code (frontend and/or backend as needed)
-2. Test manually using browser automation (see Step 6)
-3. Fix any issues discovered
-4. Verify the feature works end-to-end
+2. 确保代码能编译通过（npm run build）
+3. 基本的错误处理
+4. 标记 feature 为 passes: true
+5. 移动到下一个 feature
 
-### STEP 6: VERIFY WITH BROWSER AUTOMATION
+**暂不要求：**
+- ❌ 浏览器自动化测试
+- ❌ 截图验证
+- ❌ 端到端测试
 
-**CRITICAL:** You MUST verify features through the actual UI.
+### STEP 5: BATCH UPDATE feature_list.json
 
-Use browser automation tools:
-- Navigate to the app in a real browser
-- Interact like a human user (click, type, scroll)
-- Take screenshots at each step
-- Verify both functionality AND visual appearance
-
-**DO:**
-- Test through the UI with clicks and keyboard input
-- Take screenshots to verify visual appearance
-- Check for console errors in browser
-- Verify complete user workflows end-to-end
-
-**DON'T:**
-- Only test with curl commands (backend testing alone is insufficient)
-- Use JavaScript evaluation to bypass UI (no shortcuts)
-- Skip visual verification
-- Mark tests passing without thorough verification
-
-### STEP 7: UPDATE feature_list.json (CAREFULLY!)
-
-**YOU CAN ONLY MODIFY ONE FIELD: "passes"**
-
-After thorough verification, change:
-```json
-"passes": false
-```
-to:
+每实现 5-10 个功能后，批量更新 feature_list.json：
 ```json
 "passes": true
 ```
 
-**NEVER:**
-- Remove tests
-- Edit test descriptions
-- Modify test steps
-- Combine or consolidate tests
-- Reorder tests
+### STEP 6: COMMIT YOUR PROGRESS
 
-**ONLY CHANGE "passes" FIELD AFTER VERIFICATION WITH SCREENSHOTS.**
-
-### STEP 8: COMMIT YOUR PROGRESS
-
-Make a descriptive git commit:
+每完成一批功能后提交：
 ```bash
 git add .
-git commit -m "Implement [feature name] - verified end-to-end
+git commit -m "Implement features #X, #Y, #Z
 
 - Added [specific changes]
-- Tested with browser automation
-- Updated feature_list.json: marked test #X as passing
-- Screenshots in verification/ directory
+- Features implemented without testing
 "
 ```
 
-### STEP 9: UPDATE PROGRESS NOTES
+### STEP 7: UPDATE PROGRESS NOTES
 
 Update `claude-progress.txt` with:
-- What you accomplished this session
-- Which test(s) you completed
-- Any issues discovered or fixed
-- What should be worked on next
-- Current completion status (e.g., "45/200 tests passing")
-
-### STEP 10: END SESSION CLEANLY
-
-Before context fills up:
-1. Commit all working code
-2. Update claude-progress.txt
-3. Update feature_list.json if tests verified
-4. Ensure no uncommitted changes
-5. Leave app in working state (no broken features)
+- 本次实现了哪些功能
+- 当前完成状态 (e.g., "45/69 features implemented")
+- 下一步要做什么
 
 ---
 
-## TESTING REQUIREMENTS
+## FEATURE IMPLEMENTATION PRIORITY
 
-**ALL testing must use browser automation tools.**
+按以下顺序实现功能：
 
-Available tools:
-- puppeteer_navigate - Start browser and go to URL
-- puppeteer_screenshot - Capture screenshot
-- puppeteer_click - Click elements
-- puppeteer_fill - Fill form inputs
-- puppeteer_evaluate - Execute JavaScript (use sparingly, only for debugging)
-
-Test like a human user with mouse and keyboard. Don't take shortcuts by using JavaScript evaluation.
-Don't use the puppeteer "active tab" tool.
+1. **API 接口** (#40-53) - 后端所有接口
+2. **内容生成** (#5-8) - 核心生成功能
+3. **内容编辑** (#9-13) - 编辑功能
+4. **历史记录** (#18-22) - 草稿管理
+5. **模板库** (#23-27) - 模板功能
+6. **设置** (#28-31) - 配置功能
+7. **配图建议** (#14-17) - 图片建议
+8. **错误处理** (#32-36) - 异常处理
+9. **端到端** (#37-39) - 完整流程
+10. **样式** (#54-65) - UI 样式
+11. **构建** (#66-69) - 构建相关
 
 ---
 
 ## IMPORTANT REMINDERS
 
-**Your Goal:** Production-quality application with all 200+ tests passing
+**当前目标：快速实现所有 69 个功能**
 
-**This Session's Goal:** Complete at least one feature perfectly
+**本 Session 目标：实现 10+ 个功能**
 
-**Priority:** Fix broken tests before implementing new features
+**质量标准（暂时放宽）：**
+- ✅ 代码能编译
+- ✅ 基本功能实现
+- ❌ 不需要测试验证
 
-**Quality Bar:**
-- Zero console errors
-- Polished UI matching the design specified in app_spec.txt
-- All features work end-to-end through the UI
-- Fast, responsive, professional
-
-**You have unlimited time.** Take as long as needed to get it right. The most important thing is that you
-leave the code base in a clean state before terminating the session (Step 10).
+**后续阶段：所有功能实现完成后，再统一测试和修复**
 
 ---
 

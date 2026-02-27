@@ -76,12 +76,14 @@ def main() -> None:
     """Main entry point."""
     args = parse_args()
 
-    # Check for API key
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("Error: ANTHROPIC_API_KEY environment variable not set")
-        print("\nGet your API key from: https://console.anthropic.com/")
-        print("\nThen set it:")
+    # Check for API key (support both Anthropic and GLM proxy)
+    if not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")):
+        print("Error: ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN environment variable not set")
+        print("\nFor Anthropic: Get your API key from: https://console.anthropic.com/")
         print("  export ANTHROPIC_API_KEY='your-api-key-here'")
+        print("\nFor GLM proxy: Set ANTHROPIC_AUTH_TOKEN and ANTHROPIC_BASE_URL")
+        print("  export ANTHROPIC_AUTH_TOKEN='your-token'")
+        print("  export ANTHROPIC_BASE_URL='https://api.z.ai/api/anthropic'")
         return
 
     # Automatically place projects in generations/ directory unless already specified

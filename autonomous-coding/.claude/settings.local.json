@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source:*)",
+      "Bash(export:*)",
+      "Bash(export API_TIMEOUT_MS=\"3000000\":*)",
+      "Bash(python:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
